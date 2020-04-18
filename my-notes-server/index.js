@@ -5,6 +5,8 @@ const helmet = require('helmet')
 const morgan = require('morgan')
 const jwt = require('express-jwt')
 const jwksRsa = require('jwks-rsa')
+const shortid = require('shortid')
+
 
 // import configuration from env file
 require('dotenv').config()
@@ -13,19 +15,19 @@ require('dotenv').config()
 const app = express();
 
 // the temporal database
-const notes = [];
+const notes = []
 
 // enhance your app security with Helmet
-app.use(helmet());
+app.use(helmet())
 
 // use bodyParser to parse application/json content-type
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 
 // enable all CORS requests
-app.use(cors());
+app.use(cors())
 
 // log HTTP requests
-app.use(morgan('combined'));
+app.use(morgan('combined'))
 
 // adding authentication middleware
 const checkJwt = jwt({
@@ -42,10 +44,39 @@ const checkJwt = jwt({
     algorithms: ['RS256']
 });
 
-// retrieve all questions
+// say hello world
 app.get('/', (req, res) => {
-    res.send('hello world');
+    res.send('hello world')
 });
 
+// insert a new note
+app.post('/', (req, res) => {
+    const {title, content} = req.body
+    const new_note = {
+        id: shortid.generate(),
+        title,
+        content,
+        author: req.user === undefined ? null : req.user.id,
+    }
+    notes.push(new_note)
+    res.status(200).send()
+})
+
+// get a specific note
+app.get('/note/:id', (req, res) => {
+    let author = req.user === undefined ? null : req.user.id
+    const note = notes.filter(n => (n.id === req.params.id && n.author === author))
+    if (note.length > 1) return res.status(500).send();
+    if (note.length === 0) return res.status(404).send();
+    res.send(note[0])
+})
+
+// get a all notes for author
+app.get('/author', (req, res) => {
+    let author = req.user === undefined ? null : req.user.id
+    const note = notes.filter(n => (n.author === author))
+    res.send(note)
+})
+
 // start the server
-app.listen(8081, () => { console.log('listening on port 8081'); });
+app.listen(8081, () => { console.log('listening on port 8081') })
