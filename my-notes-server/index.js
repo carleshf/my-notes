@@ -27,6 +27,21 @@ app.use(cors());
 // log HTTP requests
 app.use(morgan('combined'));
 
+// adding authentication middleware
+const checkJwt = jwt({
+    secret: jwksRsa.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `https://process.env.AUTH0_DOMAIN/.well-known/jwks.json`
+    }),
+
+    // Validate the audience and the issuer.
+    audience: 'process.env.AUTH0_CLIENT_ID',
+    issuer: `process.env.AUTH0_DOMAIN`,
+    algorithms: ['RS256']
+});
+
 // retrieve all questions
 app.get('/', (req, res) => {
     res.send('hello world');
