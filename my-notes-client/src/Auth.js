@@ -20,23 +20,23 @@ class Auth {
         this.signOut = this.signOut.bind(this)
     }
 
-    getProfile() {
+    getProfile = () => {
         return this.profile
     }
 
-    getIdToken() {
+    getIdToken = () => {
         return this.idToken
     }
 
-    isAuthenticated() {
+    isAuthenticated = () => {
         return new Date().getTime() < this.expiresAt
     }
 
-    signIn() {
+    signIn = () => {
         this.auth0.authorize()
     }
 
-    handleAuthentication() {
+    handleAuthentication = () => {
         return new Promise((resolve, reject) => {
             this.auth0.parseHash((err, authResult) => {
                 if (err) return reject(err)
@@ -52,7 +52,7 @@ class Auth {
         })
     }
 
-    signOut() {
+    signOut = () => {
         // clear id token, profile, and expiration
         this.idToken = null
         this.profile = null

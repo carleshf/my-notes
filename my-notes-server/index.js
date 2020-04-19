@@ -51,20 +51,24 @@ app.get('/', (req, res) => {
 
 // insert a new note
 app.post('/', (req, res) => {
-    const {title, content} = req.body
+    const {title, date, content, author, public} = req.body
     const new_note = {
         id: shortid.generate(),
         title,
+        date,
         content,
-        author: req.user === undefined ? null : req.user.id,
+        author,
+        public
     }
+    console.log("new note:", new_note)
     notes.push(new_note)
-    res.status(200).send()
+    res.status(200).send({ 'id': new_note['id'] })
 })
 
 // get a specific note
-app.get('/note/:id', (req, res) => {
-    let author = req.user === undefined ? null : req.user.id
+app.get('/note/:id', checkJwt, (req, res) => {
+    let author = req.user === undefined ? null : req.user.nickname
+    console.log("filter", author)
     const note = notes.filter(n => (n.id === req.params.id && n.author === author))
     if (note.length > 1) return res.status(500).send();
     if (note.length === 0) return res.status(404).send();
@@ -73,10 +77,9 @@ app.get('/note/:id', (req, res) => {
 
 // get a all notes for author
 app.get('/author', checkJwt, (req, res) => {
-    console.log("1", req.user)
-    let author = req.user === undefined ? null : req.user.id
+    let author = req.user === undefined ? null : req.user.nickname
+    console.log("list", author)
     const note = notes.filter(n => (n.author === author))
-    console.log("2", note)
     res.send(note)
 })
 

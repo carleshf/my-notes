@@ -1,6 +1,7 @@
 import React from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import auth0Client from '../Auth'
+import {Navbar, Button} from 'react-bootstrap'
 
 function NavBar(props) {
     const signOut = () => {
@@ -8,23 +9,23 @@ function NavBar(props) {
         props.history.replace('/')
     }
 
+    var label = ''
+    var status = ''
+    if(!auth0Client.isAuthenticated()) {
+        status = <Button variant="outline-light" onClick={auth0Client.signIn}>Sign In</Button>
+    } else {
+        label = <Navbar.Text>{auth0Client.getProfile().name}</Navbar.Text>
+        status = <Button variant="outline-light" onClick={() => {signOut()}}>Sign Out</Button>
+    }
+
     return (
-        <nav className="navbar navbar-dark bg-primary fixed-top">
-            <Link className="navbar-brand" to="/">
-                Notes!
-            </Link>
-            {
-                !auth0Client.isAuthenticated() && 
-                    <button className="btn btn-dark" onClick={auth0Client.signIn}>Sign In</button>
-            }
-            {
-                auth0Client.isAuthenticated() &&
-                <div>
-                    <label className="mr-2 text-white">{auth0Client.getProfile().name}</label>
-                    <button className="btn btn-dark" onClick={() => {signOut()}}>Sign Out</button>
-                </div>
-            }
-        </nav>
+        <Navbar bg="primary" variant="dark">
+            <Navbar.Brand><Link to="/">Notes!</Link></Navbar.Brand>
+            <Navbar.Toggle />
+            <Navbar.Collapse className="justify-content-end">
+                { label }<Navbar.Text>&nbsp;</Navbar.Text>{ status }
+            </Navbar.Collapse>
+        </Navbar>
     )
 }
 
