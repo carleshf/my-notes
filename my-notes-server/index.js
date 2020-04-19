@@ -35,19 +35,19 @@ const checkJwt = jwt({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `https://process.env.AUTH0_DOMAIN/.well-known/jwks.json`
+        jwksUri: process.env.AUTH0_DOMAIN + '/.well-known/jwks.json'
     }),
 
     // Validate the audience and the issuer.
-    audience: 'process.env.AUTH0_CLIENT_ID',
-    issuer: `process.env.AUTH0_DOMAIN`,
+    audience: process.env.AUTH0_CLIENT_ID,
+    issuer: process.env.AUTH0_DOMAIN + '/',
     algorithms: ['RS256']
-});
+})
 
 // say hello world
 app.get('/', (req, res) => {
     res.send('hello world')
-});
+})
 
 // insert a new note
 app.post('/', (req, res) => {
@@ -72,9 +72,11 @@ app.get('/note/:id', (req, res) => {
 })
 
 // get a all notes for author
-app.get('/author', (req, res) => {
+app.get('/author', checkJwt, (req, res) => {
+    console.log("1", req.user)
     let author = req.user === undefined ? null : req.user.id
     const note = notes.filter(n => (n.author === author))
+    console.log("2", note)
     res.send(note)
 })
 
