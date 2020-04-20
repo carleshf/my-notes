@@ -77,7 +77,8 @@ class Note extends Component {
             title: this.state.title,
             content: this.state.content,
             date: formatted_date,
-            author: auth0Client.getProfile().nickname,
+            nickname: auth0Client.getProfile().nickname,
+            author: auth0Client.getProfile().name,
             public: this.state.public
         }, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }

@@ -9,6 +9,7 @@ class Notes {
             iid INTEGER PRIMARY KEY AUTOINCREMENT,
             id TEXT,
             author TEXT,
+            nickname TEXT,
             date TEXT,
             title TEXT,
             content TEXT,
@@ -18,23 +19,37 @@ class Notes {
 
     create = (note) => {
         return this.dao.run(
-            `INSERT INTO notes (id, author, date, title, content, public)
-                VALUES (?, ?, ?, ?, ?, ?)`,
-                [note.id, note.author, note.date, note.title, note.content, note.public]
+            `INSERT INTO notes (id, author, nickname, date, title, content, public)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [note.id, note.author, note.nickname, note.date, note.title, note.content, note.public]
         )
     }
 
-    getById = (id, author) => {
+    getByIdAndAuthor = (id, nickname) => {
         return this.dao.get(
-            `SELECT * FROM notes WHERE id = ? AND author = ?`,
-                [id, author]
+            `SELECT * FROM notes WHERE id = ? AND nickname = ?`,
+                [id, nickname]
         )
+    }
+
+    getByIdPublic = (id, checkPublic = false) => {
+        if(checkPublic) {
+            return this.dao.get(
+                `SELECT * FROM notes WHERE id = ? AND public = 1`,
+                    [id]
+            )
+        } else {
+            return this.dao.get(
+                `SELECT * FROM notes WHERE id = ?`,
+                    [id]
+            )
+        }
     }
 
     getByAuthor = (author) => {
         console.log
         return this.dao.all(
-            `SELECT * FROM notes WHERE author = ?`,
+            `SELECT * FROM notes WHERE nickname = ?`,
                 [author]
         )
     }

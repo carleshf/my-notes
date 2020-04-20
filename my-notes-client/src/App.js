@@ -6,6 +6,7 @@ import Note from './Note/Note'
 import Landing from './Landing/Landing'
 import Callback from './Callback'
 import SecuredRoute from './SecuredRoute/SecuredRoute'
+import Public from './Public/Public'
 
 class App extends Component {
     render() {
@@ -14,6 +15,7 @@ class App extends Component {
                 <NavBar/>
                 <Route exact path='/' component={Landing}/>
                 <Route exact path='/callback' component={Callback}/>
+                <Route exact path='/public/:id' component={Public}/>
                 <SecuredRoute path='/notes' component={Notes} />
                 <SecuredRoute exact path='/note/:id' component={Note}/>
             </div>

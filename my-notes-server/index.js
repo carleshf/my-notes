@@ -75,7 +75,6 @@ app.post('/', (req, res) => {
                 console.log(err)
             })
     } else {
-        console.log("update note:", new_note)
         notesRepo.update(new_note)
             .then( (rst) => {
                 res.status(200).send({ 'id':new_note['id'] })
@@ -90,9 +89,26 @@ app.post('/', (req, res) => {
 // get a specific note from an author
 app.get('/note/:id', checkJwt, (req, res) => {
     let author = req.user === undefined ? null : req.user.nickname
-    notesRepo.getById(req.params.id, author)
+    notesRepo.getByIdAndAuthor(req.params.id, author)
         .then( (rst) => {
             res.send(rst)
+        })
+        .catch( (err) => {
+            console.log('ERROR - /note/:id')
+            console.log(err)
+            res.send(500)
+        })
+})
+
+// get a public note
+app.get('/public/:id', (req, res) => {
+    notesRepo.getByIdPublic(req.params.id, false)
+        .then( (rst) => {
+            if( rst === undefined || !rst.public ) {
+                res.send([])
+            } else {
+                res.send(rst)
+            }
         })
         .catch( (err) => {
             console.log('ERROR - /note/:id')
