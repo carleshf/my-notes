@@ -5,7 +5,7 @@ import axios from 'axios'
 import ReactMde from 'react-mde'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import {Container, Row, Col, InputGroup, FormControl, Button, Form, Badge} from 'react-bootstrap'
+import {Container, Row, Col, InputGroup, FormControl, Button, Form, Badge, Toast} from 'react-bootstrap'
 
 const converter = new Showdown.Converter({
     tables: true,
@@ -30,7 +30,11 @@ class Note extends Component {
             title: '',
             content: 'Hello **moon**!',
             public: false,
-            tab: 'write'
+            saved: false,
+            tab: 'write',
+            messageShow: false,
+            message: '',
+            messageTime: 3000
         }
     }
 
@@ -45,7 +49,11 @@ class Note extends Component {
                 title: note.title,
                 content: note.content,
                 public: note.public,
-                tab: 'preview'
+                saved: true,
+                tab: 'preview',
+                messageShow: false,
+                message: 'Welcome! 👋',
+                messageTime: 3000
             })
         }
     }
@@ -64,7 +72,24 @@ class Note extends Component {
 
     updatePublic = (event) => {
         this.setState({
-            public: event.target.checked
+            public: event.target.checked,
+            messageShow: true,
+            messageTime: 6000
+        })
+        if(event.target.checked) {
+            this.setState({
+                message: '📢 Public link: <<public/' + this.state.id + '>>',
+            })
+        } else {
+            this.setState({
+                message: '🔒 Your note is now private',
+            })
+        }
+    }
+
+    setMessageShow = (flag) => {
+        this.setState({
+            messageShow: flag
         })
     }
 
@@ -83,12 +108,19 @@ class Note extends Component {
         }, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })
-        this.setState({ id: data.data.id })
+        this.setState({ 
+            id: data.data.id,
+            saved: true,
+            message: '💾 Your note was saved!',
+            messageShow: true,
+            messageTime: 4000
+        })
     }
 
     render = () => {
         var button_delete = ''
         var text_id = ''
+        var check = ''
         if(this.state.id !== 'no id') {
             button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" >Delete note</Button></Link>
         } else {
@@ -97,8 +129,29 @@ class Note extends Component {
         if(this.state.id !== 'no id') {
             text_id = <Badge variant="secondary" className="text-center">note: { this.state.id }</Badge>
         }
+        if(this.state.saved) {
+            check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public"
+                checked={this.state.public}
+                onChange={this.updatePublic}
+            />
+        } else {
+            check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public" disabled
+                checked={this.state.public}
+                onChange={this.updatePublic}
+            />
+        }
         return (
             <Container>
+                <Row>
+                    <Col xs={3}></Col>
+                    <Col xs={6}>
+                        <Toast onClose={() => this.setMessageShow(false)} show={this.state.messageShow} delay={this.state.messageTime} autohide>
+                            <Toast.Body>{ this.state.message }</Toast.Body>
+                        </Toast>
+                    </Col>
+                    <Col xs={3}></Col>
+                </Row>
+                <Row><Col>&nbsp;</Col></Row>
                 <Row>
                     <Col>
                         <InputGroup className="mb-3">
@@ -119,24 +172,13 @@ class Note extends Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col xs={2}>
                         { button_delete }
                     </Col>
-                    <Col>
-                        <Row className="justify-content-md-center">
-                            { text_id }
-                        </Row>
-                    </Col>
-                    <Col>
+                    <Col></Col>
+                    <Col  xs={2}>
                         <Form>
-                            <Form.Check 
-                                className="float-right"
-                                type="switch"
-                                id="custom-switch"
-                                label="Public"
-                                checked={this.state.public}
-                                onChange={this.updatePublic}
-                            />
+                            { check }
                         </Form>
                     </Col>
                 </Row>

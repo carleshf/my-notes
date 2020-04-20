@@ -11,19 +11,19 @@ Create and store where registered users can create and save notes for latter pur
 
 ## User stories
 
-  [X] ~Registered user can create a note~
-  [X] ~Registered user can edit a note of their propery~
-  [] Registered user can delete a note of their property
+  * ~Registered user can create a note~
+  * ~Registered user can edit a note of their propery~
+  * Registered user can delete a note of their property
 
 ## Bonus features
 
-  [X] ~Users can create and edit a note in Markdown format~
-  [X] ~Users can see the date when they created the note~
-  [X] ~Provide a service to share (visualize) notes with non-registered users~
+  * ~Users can create and edit a note in Markdown format~
+  * ~Users can see the date when they created the note~
+  * ~Provide a service to share (visualize) notes with non-registered users~
 
 ## Other todos
 
-  [] Dark theme support
-  [] Update landing page
-  [] Easy way to get _public_ link to note
-  [] Show some message indicating that a note was saved
+  * Dark theme support
+  * Update landing page
+  * Easy way to get _public_ link to note
+  * ~Show some message indicating that a note was saved~
