@@ -2,6 +2,7 @@ import React from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import auth0Client from '../Auth'
 import {Navbar, Button} from 'react-bootstrap'
+import Emoji from '../Emoji/Emoji'
 
 function NavBar(props) {
     const signOut = () => {
@@ -20,7 +21,7 @@ function NavBar(props) {
 
     return (
         <Navbar bg="primary" variant="dark">
-            <Navbar.Brand><Link to="/">Notes!</Link></Navbar.Brand>
+            <Navbar.Brand><Emoji symbol="📝" label="Notes!" /></Navbar.Brand>
             <Navbar.Toggle />
             <Navbar.Collapse className="justify-content-end">
                 { label }<Navbar.Text>&nbsp;</Navbar.Text>{ status }

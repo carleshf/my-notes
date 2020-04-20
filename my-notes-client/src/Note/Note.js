@@ -27,7 +27,7 @@ class Note extends Component {
         this.state = {
             id: 'no id',
             date: '',
-            title: 'title for this note',
+            title: '',
             content: 'Hello **moon**!',
             public: false,
             tab: 'write'
@@ -36,11 +36,9 @@ class Note extends Component {
 
     componentDidMount = async () => {
         const { match: { params } } = this.props;
-        console.log(params)
         if(params.id !== "-1") {
-            console.log('hello there')
             const note = (await axios.get(`http://localhost:8081/note/${params.id}`, {
-                headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }})).data;
+                headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }})).data
             this.setState({
                 id: note.id,
                 date: note.date,
@@ -64,9 +62,9 @@ class Note extends Component {
         })
     }
 
-    updatePublic = (value) => {
+    updatePublic = (event) => {
         this.setState({
-            public: value
+            public: event.target.checked
         })
     }
 
@@ -75,10 +73,12 @@ class Note extends Component {
         let formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds())
 
         const data = await axios.post('http://localhost:8081', {
+            id: this.state.id === 'no id' ? '' : this.state.id,
             title: this.state.title,
             content: this.state.content,
             date: formatted_date,
-            author: auth0Client.getProfile().nickname
+            author: auth0Client.getProfile().nickname,
+            public: this.state.public
         }, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })
@@ -108,6 +108,7 @@ class Note extends Component {
                                 placeholder="title for this note"
                                 aria-label="title for this note"
                                 aria-describedby="basic-addon1"
+                                value={ this.state.title }
                                 onChange={ (event) => this.updateTitle(event.target.value) }
                             />
                             <InputGroup.Append>
@@ -132,6 +133,8 @@ class Note extends Component {
                                 type="switch"
                                 id="custom-switch"
                                 label="Public"
+                                checked={this.state.public}
+                                onChange={this.updatePublic}
                             />
                         </Form>
                     </Col>
@@ -155,6 +158,14 @@ class Note extends Component {
                             }}*/
                         />
                     </Col>
+                </Row>
+                <Row><Col>&nbsp;</Col></Row>
+                <Row>
+                    <Col></Col>
+                    <Col className="text-center">
+                        <Link to="/notes"><Button variant="outline-secondary">Go to all notes</Button></Link>
+                    </Col>
+                    <Col></Col>
                 </Row>
             </Container>
         )

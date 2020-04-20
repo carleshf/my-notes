@@ -6,16 +6,28 @@ const morgan = require('morgan')
 const jwt = require('express-jwt')
 const jwksRsa = require('jwks-rsa')
 const shortid = require('shortid')
+const Promise = require('bluebird')
+const DAO = require('./dao')
+const Notes = require('./notes')
 
 
 // import configuration from env file
 require('dotenv').config()
 
+// open database connection
+const dao = new DAO('./database.sqlite3')
+const notesRepo = new Notes(dao)
+notesRepo.createTable()
+    .catch((err) => {
+        console.log('Error: ')
+        console.log(JSON.stringify(err))
+    })
+
 // define the Express app
 const app = express();
 
 // the temporal database
-const notes = []
+//const notes = []
 
 // enhance your app security with Helmet
 app.use(helmet())
@@ -51,36 +63,56 @@ app.get('/', (req, res) => {
 
 // insert a new note
 app.post('/', (req, res) => {
-    const {title, date, content, author, public} = req.body
-    const new_note = {
-        id: shortid.generate(),
-        title,
-        date,
-        content,
-        author,
-        public
+    const new_note = req.body
+    if(new_note.id === '') {
+        new_note.id = shortid.generate()
+        notesRepo.create(new_note)
+            .then( (rst) => {
+                res.status(200).send({ 'id': new_note['id'] })
+            })
+            .catch( (err) => {
+                console.log('ERROR - / (new)')
+                console.log(err)
+            })
+    } else {
+        console.log("update note:", new_note)
+        notesRepo.update(new_note)
+            .then( (rst) => {
+                res.status(200).send({ 'id':new_note['id'] })
+            })
+            .catch( (err) => {
+                console.log('ERROR - / (update)')
+                console.log(err)
+            })
     }
-    console.log("new note:", new_note)
-    notes.push(new_note)
-    res.status(200).send({ 'id': new_note['id'] })
 })
 
-// get a specific note
+// get a specific note from an author
 app.get('/note/:id', checkJwt, (req, res) => {
     let author = req.user === undefined ? null : req.user.nickname
-    console.log("filter", author)
-    const note = notes.filter(n => (n.id === req.params.id && n.author === author))
-    if (note.length > 1) return res.status(500).send();
-    if (note.length === 0) return res.status(404).send();
-    res.send(note[0])
+    notesRepo.getById(req.params.id, author)
+        .then( (rst) => {
+            res.send(rst)
+        })
+        .catch( (err) => {
+            console.log('ERROR - /note/:id')
+            console.log(err)
+            res.send(500)
+        })
 })
 
-// get a all notes for author
+// get all notes for author
 app.get('/author', checkJwt, (req, res) => {
     let author = req.user === undefined ? null : req.user.nickname
-    console.log("list", author)
-    const note = notes.filter(n => (n.author === author))
-    res.send(note)
+    notesRepo.getByAuthor(author)
+        .then( (rst) => {
+            res.send(rst)
+        })
+        .catch( (err) => {
+            console.log('ERROR - /author')
+            console.log(err)
+            res.send(500)
+        } )
 })
 
 // start the server

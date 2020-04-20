@@ -19,6 +19,7 @@ class Notes extends Component {
             'http://localhost:8081/author', {
                 headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })).data
+        
         this.setState({
             notes,
         })
@@ -35,10 +36,10 @@ class Notes extends Component {
         if(this.state.notes !== null && this.state.notes.length !== 0) {
             notes = <Row><Col><ListGroup> { 
                 this.state.notes.map( (note, idx) => (
-                    <ListGroup.Item action>
-                    <Link  key={idx} to={'/note/' + note.id }>
-                        <Emoji symbol={ note.public ? "🔓" : "🔒" } label={ note.public ? "public" : "private" }/> / { note.date } / { note.title }
-                    </Link>
+                    <ListGroup.Item action key={idx}>
+                        <Emoji symbol={ note.public ? "📢" : "🔒" } label={ note.public ? "public" : "private" }/>
+                        &nbsp;
+                        <Link to={'/note/' + note.id }>{ note.date } / { note.title } </Link>
                     </ListGroup.Item>
                 ))
             } </ListGroup></Col></Row>

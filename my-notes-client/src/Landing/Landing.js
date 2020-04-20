@@ -1,8 +1,4 @@
 import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
-import auth0Client from '../Auth'
-import axios from 'axios'
 
 class Landing extends Component {
     render() {
