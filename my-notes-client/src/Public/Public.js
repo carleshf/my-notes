@@ -1,11 +1,10 @@
 import React, {Component} from 'react'
 import {withRouter} from 'react-router-dom'
 import axios from 'axios'
-import ReactMde from 'react-mde'
-import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import DOMPurify from 'dompurify'
-import {Container, Row, Col, InputGroup, FormControl, Button, Form, Badge} from 'react-bootstrap'
+import {Container, Row, Col} from 'react-bootstrap'
+import * as Showdown from 'showdown'
 
 const converter = new Showdown.Converter({
     tables: true,
@@ -13,7 +12,6 @@ const converter = new Showdown.Converter({
     strikethrough: true,
     tasklists: true
 })
-
 
 class Public extends Component {
     constructor(props) {

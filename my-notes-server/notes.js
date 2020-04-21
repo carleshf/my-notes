@@ -63,10 +63,10 @@ class Notes {
         )
     }
     
-    delete(id) {
+    delete(id, author) {
         return this.dao.run(
-            `DELETE FROM notes WHERE id = ?`,
-                [id]
+            `DELETE FROM notes WHERE id = ? and nickname = ?`,
+                [id, author]
         )
     }
 }

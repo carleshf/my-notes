@@ -73,6 +73,7 @@ app.post('/', (req, res) => {
             .catch( (err) => {
                 console.log('ERROR - / (new)')
                 console.log(err)
+                res.sendStatus(500)
             })
     } else {
         notesRepo.update(new_note)
@@ -82,6 +83,7 @@ app.post('/', (req, res) => {
             .catch( (err) => {
                 console.log('ERROR - / (update)')
                 console.log(err)
+                res.sendStatus(500)
             })
     }
 })
@@ -96,7 +98,7 @@ app.get('/note/:id', checkJwt, (req, res) => {
         .catch( (err) => {
             console.log('ERROR - /note/:id')
             console.log(err)
-            res.send(500)
+            res.sendStatus(500)
         })
 })
 
@@ -113,7 +115,7 @@ app.get('/public/:id', (req, res) => {
         .catch( (err) => {
             console.log('ERROR - /note/:id')
             console.log(err)
-            res.send(500)
+            res.sendStatus(500)
         })
 })
 
@@ -127,7 +129,21 @@ app.get('/author', checkJwt, (req, res) => {
         .catch( (err) => {
             console.log('ERROR - /author')
             console.log(err)
-            res.send(500)
+            res.sendStatus(500)
+        } )
+})
+
+// delete a specific note
+app.delete('/delete/:id', checkJwt, (req, res) => {
+    let author = req.user === undefined ? null : req.user.nickname
+    notesRepo.delete(req.params.id, author)
+        .then( (rst) => {
+            res.status(200).send(rst)
+        })
+        .catch( (err) => {
+            console.log('ERROR - /delete/:id')
+            console.log(err)
+            res.sendStatus(500)
         } )
 })
 

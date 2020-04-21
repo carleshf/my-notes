@@ -13,7 +13,7 @@ Create and store where registered users can create and save notes for latter pur
 
   * ~Registered user can create a note~
   * ~Registered user can edit a note of their propery~
-  * Registered user can delete a note of their property
+  * ~Registered user can delete a note of their property~
 
 ## Bonus features
 
@@ -24,6 +24,6 @@ Create and store where registered users can create and save notes for latter pur
 ## Other todos
 
   * Dark theme support
-  * Update landing page
-  * Easy way to get _public_ link to note
+  * ~Update landing page~
+  * ~Easy way to get _public_ link to note~
   * ~Show some message indicating that a note was saved~

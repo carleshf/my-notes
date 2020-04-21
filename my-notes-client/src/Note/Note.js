@@ -34,7 +34,8 @@ class Note extends Component {
             tab: 'write',
             messageShow: false,
             message: '',
-            messageTime: 3000
+            messageTime: 3000,
+            history: props.history
         }
     }
 
@@ -117,17 +118,21 @@ class Note extends Component {
         })
     }
 
+    delete = async () => {
+        const data = await axios.delete(`http://localhost:8081/delete/${this.state.id}`, {
+            headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
+        })
+        console.log(data)
+        this.state.history.push('/notes')
+    }
+
     render = () => {
         var button_delete = ''
-        var text_id = ''
         var check = ''
         if(this.state.id !== 'no id') {
-            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" >Delete note</Button></Link>
+            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" onClick={ this.delete }>Delete note</Button></Link>
         } else {
             button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" disabled>Delete note</Button></Link>
-        }
-        if(this.state.id !== 'no id') {
-            text_id = <Badge variant="secondary" className="text-center">note: { this.state.id }</Badge>
         }
         if(this.state.saved) {
             check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public"
@@ -143,13 +148,12 @@ class Note extends Component {
         return (
             <Container>
                 <Row>
-                    <Col xs={3}></Col>
+                    <Col xs={6}></Col>
                     <Col xs={6}>
                         <Toast onClose={() => this.setMessageShow(false)} show={this.state.messageShow} delay={this.state.messageTime} autohide>
                             <Toast.Body>{ this.state.message }</Toast.Body>
                         </Toast>
                     </Col>
-                    <Col xs={3}></Col>
                 </Row>
                 <Row><Col>&nbsp;</Col></Row>
                 <Row>

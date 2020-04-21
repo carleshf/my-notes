@@ -1,5 +1,5 @@
 import React from 'react'
-import {Link, withRouter} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import auth0Client from '../Auth'
 import {Navbar, Button} from 'react-bootstrap'
 import Emoji from '../Emoji/Emoji'
