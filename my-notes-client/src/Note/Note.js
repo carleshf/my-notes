@@ -42,7 +42,7 @@ class Note extends Component {
     componentDidMount = async () => {
         const { match: { params } } = this.props;
         if(params.id !== "-1") {
-            const note = (await axios.get(`http://localhost:8081/note/${params.id}`, {
+            const note = (await axios.get(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/note/${params.id}`, {
                 headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }})).data
             this.setState({
                 id: note.id,
@@ -98,7 +98,7 @@ class Note extends Component {
         let current_datetime = new Date()
         let formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds())
 
-        const data = await axios.post('http://localhost:8081', {
+        const data = await axios.post(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}`, {
             id: this.state.id === 'no id' ? '' : this.state.id,
             title: this.state.title,
             content: this.state.content,
@@ -119,7 +119,7 @@ class Note extends Component {
     }
 
     delete = async () => {
-        const data = await axios.delete(`http://localhost:8081/delete/${this.state.id}`, {
+        const data = await axios.delete(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/delete/${this.state.id}`, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })
         console.log(data)
@@ -150,7 +150,7 @@ class Note extends Component {
                 <Row>
                     <Col xs={6}></Col>
                     <Col xs={6}>
-                        <Toast onClose={() => this.setMessageShow(false)} show={this.state.messageShow} delay={this.state.messageTime} autohide>
+                        <Toast onClose={ () => this.setMessageShow(false) } show={ this.state.messageShow } delay={ this.state.messageTime } autohide>
                             <Toast.Body>{ this.state.message }</Toast.Body>
                         </Toast>
                     </Col>

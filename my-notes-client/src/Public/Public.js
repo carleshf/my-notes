@@ -36,7 +36,7 @@ class Public extends Component {
                 content: 'The content you are looking for **is not available**'
             })
         } else {
-            const note = (await axios.get(`http://localhost:8081/public/${params.id}`)).data
+            const note = (await axios.get(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/public/${params.id}`)).data
             console.log(">", note)
             this.setState({
                 id: note.id,

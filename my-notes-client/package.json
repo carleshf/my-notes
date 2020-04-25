@@ -1,5 +1,6 @@
 {
   "name": "my-notes",
+  "homepage": "http://notes.carleshf.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

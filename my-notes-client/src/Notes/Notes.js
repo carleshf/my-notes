@@ -15,13 +15,16 @@ class Notes extends Component {
     }
 
     async componentDidMount() {
+        console.log("componentDidMount")
+        console.log(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/author`)
+        console.log(`Bearer ${auth0Client.getIdToken()}`)
         const notes = (await axios.get(
-            'http://localhost:8081/author', {
+            `${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/author`, {
                 headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
-        })).data
-        
+        }))
+        console.log("notes", notes)
         this.setState({
-            notes,
+            notes: notes.data,
         })
     }
 

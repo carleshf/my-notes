@@ -58,7 +58,7 @@ const checkJwt = jwt({
 
 // say hello world
 app.get('/', (req, res) => {
-    res.send('hello world')
+    res.send('hello moon')
 })
 
 // insert a new note
@@ -148,4 +148,4 @@ app.delete('/delete/:id', checkJwt, (req, res) => {
 })
 
 // start the server
-app.listen(8081, () => { console.log('listening on port 8081') })
+app.listen(80, () => { console.log('listening on port 80') })
