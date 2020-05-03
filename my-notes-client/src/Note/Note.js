@@ -5,7 +5,7 @@ import axios from 'axios'
 import ReactMde from 'react-mde'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import {Container, Row, Col, InputGroup, FormControl, Button, Form, Badge, Toast} from 'react-bootstrap'
+import {Container, Row, Col, InputGroup, FormControl, Button, Form, Modal} from 'react-bootstrap'
 
 const converter = new Showdown.Converter({
     tables: true,
@@ -25,16 +25,18 @@ class Note extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            id: 'no id',
-            date: '',
+            shortId: 'no id',
+            creationDate: '',
+            updateDate: '',
             title: '',
             content: 'Hello **moon**!',
-            public: false,
+            isPublic: false,
+            showCreation: true,
+            showUpdate: true,
+            showAuthor: true,
             saved: false,
             tab: 'write',
-            messageShow: false,
-            message: '',
-            messageTime: 3000,
+            showPublicModeal: false,
             history: props.history
         }
     }
@@ -45,53 +47,47 @@ class Note extends Component {
             const note = (await axios.get(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/note/${params.id}`, {
                 headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }})).data
             this.setState({
-                id: note.id,
-                date: note.date,
+                shortId: note.shortId,
+                creationDate: note.creationDate,
+                updateDate: note.updateDate,
                 title: note.title,
                 content: note.content,
-                public: note.public,
+                isPublic: note.isPublic,
+                showCreation: note.showCreation,
+                showUpdate: note.showUpdate,
+                showAuthor: note.showAuthor,
                 saved: true,
-                tab: 'preview',
-                messageShow: false,
-                message: 'Welcome! 👋',
-                messageTime: 3000
+                tab: 'preview'
             })
         }
     }
     
     updateContent = (value) => {
-        this.setState({
-            content: value,
-        })
+        this.setState({ content: value })
     }
 
     updateTitle = (value) => {
-        this.setState({
-            title: value,
-        })
+        this.setState({ title: value })
     }
 
-    updatePublic = (event) => {
-        this.setState({
-            public: event.target.checked,
-            messageShow: true,
-            messageTime: 6000
-        })
-        if(event.target.checked) {
-            this.setState({
-                message: '📢 Public link: <<public/' + this.state.id + '>>',
-            })
-        } else {
-            this.setState({
-                message: '🔒 Your note is now private',
-            })
-        }
+    setShowPublic = (flag) => { 
+        this.setState({ showPublicModeal: flag })
     }
 
-    setMessageShow = (flag) => {
-        this.setState({
-            messageShow: flag
-        })
+    togglePublic = () => {
+        this.setState({ isPublic: !this.state.isPublic })
+    }
+
+    togglePublicCreation = () => {
+        this.setState({ showCreation: !this.state.showCreation })
+    }
+
+    togglePublicUpdate = () => {
+        this.setState({ showUpdate: !this.state.showUpdate })
+    }
+
+    togglePublicAuthor = () => {
+        this.setState({ showAuthor: !this.state.showAuthor })
     }
 
     submit = async () => {
@@ -99,27 +95,29 @@ class Note extends Component {
         let formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds())
 
         const data = await axios.post(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}`, {
-            id: this.state.id === 'no id' ? '' : this.state.id,
-            title: this.state.title,
-            content: this.state.content,
-            date: formatted_date,
+            shortId: this.state.shortId === 'no id' ? '' : this.state.shortId,
             nickname: auth0Client.getProfile().nickname,
             author: auth0Client.getProfile().name,
-            public: this.state.public
+            creationDate: this.state.creationDate === '' ? formatted_date : this.state.creationDate,
+            updateDate: formatted_date,
+            title: this.state.title,
+            content: this.state.content,
+            isPublic: this.state.isPublic,
+            showCreation: this.state.showCreation,
+            showUpdate: this.state.showUpdate,
+            showAuthor: this.state.showAuthor
         }, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })
+
         this.setState({ 
-            id: data.data.id,
-            saved: true,
-            message: '💾 Your note was saved!',
-            messageShow: true,
-            messageTime: 4000
+            shortId: data.data.shortId,
+            saved: true
         })
     }
 
     delete = async () => {
-        const data = await axios.delete(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/delete/${this.state.id}`, {
+        const data = await axios.delete(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/delete/${this.state.shortId}`, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })
         console.log(data)
@@ -128,31 +126,29 @@ class Note extends Component {
 
     render = () => {
         var button_delete = ''
-        var check = ''
-        if(this.state.id !== 'no id') {
+        var button_public = ''
+        if(this.state.saved) {
+            button_public = <Button size = "sm" variant="outline-secondary" onClick={ () => this.setShowPublic(true) }>Public</Button>
             button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" onClick={ this.delete }>Delete note</Button></Link>
         } else {
+            button_public = <Button size = "sm" variant="outline-secondary" disabled>Public</Button>
             button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" disabled>Delete note</Button></Link>
-        }
-        if(this.state.saved) {
-            check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public"
+            /*check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public" disabled
                 checked={this.state.public}
                 onChange={this.updatePublic}
-            />
-        } else {
-            check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public" disabled
-                checked={this.state.public}
-                onChange={this.updatePublic}
-            />
+            />*/
         }
         return (
             <Container>
                 <Row>
                     <Col xs={6}></Col>
                     <Col xs={6}>
-                        <Toast onClose={ () => this.setMessageShow(false) } show={ this.state.messageShow } delay={ this.state.messageTime } autohide>
-                            <Toast.Body>{ this.state.message }</Toast.Body>
-                        </Toast>
+                        <PublicModal show={ this.state.showPublicModeal } onHide={ () => this.setShowPublic(false) } 
+                            ispublic={ this.state.isPublic } togglepublic={ this.togglePublic }
+                            showcreation={ this.state.showCreation } togglecreation={ this.togglePublicCreation }
+                            showupdate={ this.state.showUpdate } toggleupdate={ this.togglePublicUpdate }
+                            showauthor={ this.state.showAuthor } toggleauthor={ this.togglePublicAuthor }
+                        />
                     </Col>
                 </Row>
                 <Row><Col>&nbsp;</Col></Row>
@@ -180,10 +176,8 @@ class Note extends Component {
                         { button_delete }
                     </Col>
                     <Col></Col>
-                    <Col  xs={2}>
-                        <Form>
-                            { check }
-                        </Form>
+                    <Col  xs={2} className="text-right">
+                        { button_public }
                     </Col>
                 </Row>
                 <Row><Col>&nbsp;</Col></Row>
@@ -217,6 +211,87 @@ class Note extends Component {
             </Container>
         )
     }
+}
+
+function PublicModal(props) {
+    return (
+        <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    Public configuration
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Container>
+                    <Row>
+                        <Col className="text-center">
+                            <em>Remember to save the note in order to apply the changes from this form</em>
+                        </Col>
+                    </Row>
+                    <Row><Col>&nbsp;</Col></Row>
+                    <Row className="show-grid">
+                        <Col xs={6} md={6}>
+                            Make this note public?
+                        </Col>
+                        <Col xs={2} md={2}>
+                            <Form.Check className="float-right" type="switch" 
+                                id="public-switch" 
+                                label={ props.ispublic ? 'Yes' : 'No' }
+                                checked={ props.ispublic }
+                                onChange={ props.togglepublic }
+                            />
+                        </Col>
+                        <Col xs={4} md={4}></Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={6} md={6}>
+                            Show creation date?
+                        </Col>
+                        <Col xs={2} md={2}>
+                            <Form.Check className="float-right" type="switch" 
+                                id="public-creation-switch" 
+                                label={ props.showcreation ? 'Yes' : 'No' }
+                                checked={ props.showcreation }
+                                onChange={ props.togglecreation }
+                            />
+                        </Col>
+                        <Col xs={4} md={4}></Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={6} md={6}>
+                            Show update date?
+                        </Col>
+                        <Col xs={2} md={2}>
+                            <Form.Check className="float-right" type="switch" 
+                                id="public-update-switch" 
+                                label={ props.showupdate ? 'Yes' : 'No' }
+                                checked={ props.showupdate }
+                                onChange={ props.toggleupdate }
+                            />
+                        </Col>
+                        <Col xs={4} md={4}></Col>
+                    </Row>
+                    <Row className="show-grid">
+                        <Col xs={6} md={6}>
+                            Show author's name?
+                        </Col>
+                        <Col xs={2} md={2}>
+                            <Form.Check className="float-right" type="switch" 
+                                id="public-author-switch" 
+                                label={ props.showauthor ? 'Yes' : 'No' }
+                                checked={ props.showauthor }
+                                onChange={ props.toggleauthor }
+                            />
+                        </Col>
+                        <Col xs={4} md={4}></Col>
+                    </Row>
+                </Container>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="outline-secondary" onClick={ props.onHide }>Close</Button>
+            </Modal.Footer>
+        </Modal>
+    )
 }
 
 export default withRouter(Note)

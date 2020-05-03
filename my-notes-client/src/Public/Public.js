@@ -17,21 +17,24 @@ class Public extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            id: 'no id',
-            date: '',
-            title: '',
-            content: 'Hello **moon**!'
+            shortId: '',
+            author: '',
+            creationDate: '',
+            updateDate: '',            
+            title: 'Invalid URL',
+            content: 'The content you are looking for **is not available**'
         }
     }
 
     componentDidMount = async () => {
-        console.log("hello")
         const { match: { params } } = this.props;
         console.log(params)
         if(params.id === "-1" || params.id === '') {
             this.setState({
-                id: '',
-                date: '',
+                shortId: '',
+                author: '',
+                creationDate: '',
+                updateDate: '',            
                 title: 'Invalid URL',
                 content: 'The content you are looking for **is not available**'
             })
@@ -39,17 +42,29 @@ class Public extends Component {
             const note = (await axios.get(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/public/${params.id}`)).data
             console.log(">", note)
             this.setState({
-                id: note.id,
-                date: note.date,
+                shortId: note.shortId,
+                author: note.author,
+                creationDate: note.creationDate,
+                updateDate: note.updateDate,
                 title: note.title,
-                content: note.content,
-                nickname: note.nickname,
-                author: note.author
+                content: note.content
             })
         }
     }
 
     render = () => {
+        var author = ''
+        var cDate = ''
+        var uDate = ''
+        if(this.state.author !== '') {
+            author = <Row><Col>by: <em>{ this.state.author }</em></Col></Row>
+        }
+        if(this.state.creationDate !== '') {
+            cDate = <Row><Col>created on: <em>{ this.state.creationDate }</em></Col></Row>
+        }
+        if(this.state.updateDate !== '') {
+            uDate = <Row><Col>last updated on: <em>{ this.state.updateDate }</em></Col></Row>
+        }
         return (
             <Container>
                 <Row>
@@ -57,11 +72,9 @@ class Public extends Component {
                         <h1>{ this.state.title }</h1>
                     </Col>
                 </Row>
-                <Row>
-                    <Col>
-                        <em>{ this.state.author }</em>
-                    </Col>
-                </Row>
+                { author }
+                { cDate }
+                { uDate }
                 <Row><Col>&nbsp;</Col></Row>
                 <Row><Col><hr /></Col></Row>
                 <Row><Col>&nbsp;</Col></Row>

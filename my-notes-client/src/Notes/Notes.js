@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import auth0Client from '../Auth'
 import axios from 'axios'
-import {Container, Row, InputGroup, FormControl, Button, Pagination, ListGroup, Col} from 'react-bootstrap'
+import {Container, Row, InputGroup, FormControl, Button, ListGroup, Col} from 'react-bootstrap'
 import Emoji from '../Emoji/Emoji'
 
 class Notes extends Component {
@@ -15,17 +15,11 @@ class Notes extends Component {
     }
 
     async componentDidMount() {
-        console.log("componentDidMount")
-        console.log(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/author`)
-        console.log(`Bearer ${auth0Client.getIdToken()}`)
         const notes = (await axios.get(
             `${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/author`, {
                 headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         }))
-        console.log("notes", notes)
-        this.setState({
-            notes: notes.data,
-        })
+        this.setState({ notes: notes.data })
     }
 
     render = () => {
@@ -40,9 +34,9 @@ class Notes extends Component {
             notes = <Row><Col><ListGroup> { 
                 this.state.notes.map( (note, idx) => (
                     <ListGroup.Item action key={idx}>
-                        <Emoji symbol={ note.public ? "📢" : "🔒" } label={ note.public ? "public" : "private" }/>
+                        <Emoji symbol={ note.isPublic ? "🔓" : "🔒" } label={ note.isPublic ? "public" : "private" }/>
                         &nbsp;
-                        <Link to={'/note/' + note.id }>{ note.date } / { note.title } </Link>
+                        <Link to={'/note/' + note.shortId }>{ note.date } | { note.title } </Link>
                     </ListGroup.Item>
                 ))
             } </ListGroup></Col></Row>
