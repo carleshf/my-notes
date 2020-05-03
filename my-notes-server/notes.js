@@ -6,67 +6,73 @@ class Notes {
     createTable = () => {
         const sql = `
         CREATE TABLE IF NOT EXISTS notes (
-            iid INTEGER PRIMARY KEY AUTOINCREMENT,
-            id TEXT,
-            author TEXT,
-            nickname TEXT,
-            date TEXT,
-            title TEXT,
-            content TEXT,
-            public BOOLEAN)`
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            shortId			TEXT,
+            nickname		TEXT,
+			author			TEXT,
+            cretationDate	TEXT,
+			updateDate 		TEXT
+            title 			TEXT,
+            content 		TEXT,
+            idPublic 		BOOLEAN,
+			showCreation	BOOLEAN,
+			showUpdate		BOOLEAN,
+			showAuthor		BOOLEAN
+		)`
         return this.dao.run(sql)
     }
 
     create = (note) => {
         return this.dao.run(
-            `INSERT INTO notes (id, author, nickname, date, title, content, public)
-                VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [note.id, note.author, note.nickname, note.date, note.title, note.content, note.public]
+            `INSERT INTO notes 
+				(shortId, nickname, author cretationDate, updateDate, title, content, idPublic, showCreation, showUpdate, showAuthor)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [note.shortId, note.nickname, note.author, note.cretationDate, note.updateDate, note.title, note.content, note.idPublic, note.showCreation, note.showUpdate, note.showAuthor]
         )
     }
 
-    getByIdAndAuthor = (id, nickname) => {
+    getByIdAndAuthor = (shortId, nickname) => {
         return this.dao.get(
-            `SELECT * FROM notes WHERE id = ? AND nickname = ?`,
-                [id, nickname]
+            `SELECT * FROM notes WHERE shortId = ? AND nickname = ?`,
+                [shortId, nickname]
         )
     }
 
-    getByIdPublic = (id, checkPublic = false) => {
+    getByIdPublic = (shortId, checkPublic = false) => {
         if(checkPublic) {
             return this.dao.get(
-                `SELECT * FROM notes WHERE id = ? AND public = 1`,
-                    [id]
+                `SELECT * FROM notes WHERE shortId = ? AND idPublic = 1`,
+                    [shortId]
             )
         } else {
             return this.dao.get(
-                `SELECT * FROM notes WHERE id = ?`,
-                    [id]
+                `SELECT * FROM notes WHERE idPublic = ?`,
+                    [idPublic]
             )
         }
     }
 
-    getByAuthor = (author) => {
+    getByAuthor = (nickname) => {
         console.log
         return this.dao.all(
             `SELECT * FROM notes WHERE nickname = ?`,
-                [author]
+                [nickname]
         )
     }
 
     update = (note) => {
         return this.dao.run(
-            `UPDATE notes
-                SET date = ?, title = ?, content = ?, public = ?
-                WHERE id = ?`,
-                [note.date, note.title, note.content, note.public, note.id]
+            `UPDATE notes SET 
+				updateDate = ?, title = ?, content = ?, idPublic = ?, showCreation = ?, showUpdate = ?, showAuthor = ?
+            WHERE shortId = ?`,
+				[note.updateDate, note.title, note.content, note.idPublic, note.showCreation, note.showUpdate, note.showAuthor, note.shortId]
         )
     }
     
-    delete(id, author) {
+    delete(shortId, nickname) {
         return this.dao.run(
-            `DELETE FROM notes WHERE id = ? and nickname = ?`,
-                [id, author]
+            `DELETE FROM notes WHERE shortId = ? and nickname = ?`,
+                [shortId, nickname]
         )
     }
 }
