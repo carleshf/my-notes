@@ -10,11 +10,11 @@ class Notes {
             shortId			TEXT,
             nickname		TEXT,
 			author			TEXT,
-            cretationDate	TEXT,
-			updateDate 		TEXT
+            creationDate	TEXT,
+			updateDate 		TEXT,
             title 			TEXT,
             content 		TEXT,
-            idPublic 		BOOLEAN,
+            isPublic 		BOOLEAN,
 			showCreation	BOOLEAN,
 			showUpdate		BOOLEAN,
 			showAuthor		BOOLEAN
@@ -25,9 +25,9 @@ class Notes {
     create = (note) => {
         return this.dao.run(
             `INSERT INTO notes 
-				(shortId, nickname, author cretationDate, updateDate, title, content, idPublic, showCreation, showUpdate, showAuthor)
+				(shortId, nickname, author, creationDate, updateDate, title, content, isPublic, showCreation, showUpdate, showAuthor)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [note.shortId, note.nickname, note.author, note.cretationDate, note.updateDate, note.title, note.content, note.idPublic, note.showCreation, note.showUpdate, note.showAuthor]
+                [note.shortId, note.nickname, note.author, note.creationDate, note.updateDate, note.title, note.content, note.isPublic, note.showCreation, note.showUpdate, note.showAuthor]
         )
     }
 
@@ -41,13 +41,13 @@ class Notes {
     getByIdPublic = (shortId, checkPublic = false) => {
         if(checkPublic) {
             return this.dao.get(
-                `SELECT * FROM notes WHERE shortId = ? AND idPublic = 1`,
+                `SELECT * FROM notes WHERE shortId = ? AND isPublic = 1`,
                     [shortId]
             )
         } else {
             return this.dao.get(
-                `SELECT * FROM notes WHERE idPublic = ?`,
-                    [idPublic]
+                `SELECT * FROM notes WHERE isPublic = ?`,
+                    [isPublic]
             )
         }
     }
@@ -63,9 +63,9 @@ class Notes {
     update = (note) => {
         return this.dao.run(
             `UPDATE notes SET 
-				updateDate = ?, title = ?, content = ?, idPublic = ?, showCreation = ?, showUpdate = ?, showAuthor = ?
+				updateDate = ?, title = ?, content = ?, isPublic = ?, showCreation = ?, showUpdate = ?, showAuthor = ?
             WHERE shortId = ?`,
-				[note.updateDate, note.title, note.content, note.idPublic, note.showCreation, note.showUpdate, note.showAuthor, note.shortId]
+				[note.updateDate, note.title, note.content, note.isPublic, note.showCreation, note.showUpdate, note.showAuthor, note.shortId]
         )
     }
     

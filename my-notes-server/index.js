@@ -24,7 +24,8 @@ notesRepo.createTable()
     })
 
 // define the Express app
-const app = express();
+const app = express()
+const port = process.env.PORT || 5000
 
 // the temporal database
 //const notes = []
@@ -91,7 +92,7 @@ app.post('/', (req, res) => {
 // get a specific note from an author
 app.get('/note/:id', checkJwt, (req, res) => {
     let nickname = req.user === undefined ? null : req.user.nickname
-    notesRepo.getByIdAndAuthor(req.params.shortId, nickname)
+    notesRepo.getByIdAndAuthor(req.params.id, nickname)
         .then( (rst) => {
             res.send(rst)
         })
@@ -104,7 +105,7 @@ app.get('/note/:id', checkJwt, (req, res) => {
 
 // get a public note
 app.get('/public/:id', (req, res) => {
-    notesRepo.getByIdPublic(req.params.shortId, true)
+    notesRepo.getByIdPublic(req.params.id, true)
         .then( (rst) => {
             if( rst === undefined || !rst.isPublic ) {
                 res.send([])
@@ -143,7 +144,7 @@ app.get('/author', checkJwt, (req, res) => {
 // delete a specific note
 app.delete('/delete/:id', checkJwt, (req, res) => {
     let nickname = req.user === undefined ? null : req.user.nickname
-    notesRepo.delete(req.params.shortId, nickname)
+    notesRepo.delete(req.params.id, nickname)
         .then( (rst) => {
             res.status(200).send(rst)
         })
@@ -155,4 +156,4 @@ app.delete('/delete/:id', checkJwt, (req, res) => {
 })
 
 // start the server
-app.listen(80, () => { console.log('listening on port 80') })
+app.listen(port, () => { console.log(`listening on port ${port}`) })
