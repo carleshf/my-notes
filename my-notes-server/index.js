@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
 })
 
 // insert a new note
-app.post('/', (req, res) => {
+app.post('/', checkJwt, (req, res) => {
     const note = req.body
     if(note.shortId === '') {
         note.shortId = shortid.generate()
@@ -110,6 +110,16 @@ app.get('/public/:id', (req, res) => {
             if( rst === undefined || !rst.isPublic ) {
                 res.send([])
             } else {
+				if(!rst.showCreation) {
+					delete rst.creationDate
+				}
+				if(!rst.showUpdate) {
+					delete rst.updateDate
+				}
+				if(!rst.showAuthor) {
+					delete rst.author
+				}
+				delete rst.nickname
                 res.send(rst)
             }
         })
