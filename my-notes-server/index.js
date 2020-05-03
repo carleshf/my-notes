@@ -58,17 +58,17 @@ const checkJwt = jwt({
 
 // say hello world
 app.get('/', (req, res) => {
-    res.send('hello moon')
+    res.send('hello world')
 })
 
 // insert a new note
 app.post('/', (req, res) => {
-    const new_note = req.body
-    if(new_note.id === '') {
-        new_note.id = shortid.generate()
-        notesRepo.create(new_note)
+    const note = req.body
+    if(note.shortId === '') {
+        note.shortId = shortid.generate()
+        notesRepo.create(note)
             .then( (rst) => {
-                res.status(200).send({ 'id': new_note['id'] })
+                res.status(200).send({ 'shortId': note['shortId'] })
             })
             .catch( (err) => {
                 console.log('ERROR - / (new)')
@@ -76,9 +76,9 @@ app.post('/', (req, res) => {
                 res.sendStatus(500)
             })
     } else {
-        notesRepo.update(new_note)
+        notesRepo.update(note)
             .then( (rst) => {
-                res.status(200).send({ 'id':new_note['id'] })
+                res.status(200).send({ 'shortId': note['shortId'] })
             })
             .catch( (err) => {
                 console.log('ERROR - / (update)')
@@ -90,8 +90,8 @@ app.post('/', (req, res) => {
 
 // get a specific note from an author
 app.get('/note/:id', checkJwt, (req, res) => {
-    let author = req.user === undefined ? null : req.user.nickname
-    notesRepo.getByIdAndAuthor(req.params.id, author)
+    let nickname = req.user === undefined ? null : req.user.nickname
+    notesRepo.getByIdAndAuthor(req.params.shortId, nickname)
         .then( (rst) => {
             res.send(rst)
         })
@@ -104,9 +104,9 @@ app.get('/note/:id', checkJwt, (req, res) => {
 
 // get a public note
 app.get('/public/:id', (req, res) => {
-    notesRepo.getByIdPublic(req.params.id, false)
+    notesRepo.getByIdPublic(req.params.shortId, true)
         .then( (rst) => {
-            if( rst === undefined || !rst.public ) {
+            if( rst === undefined || !rst.isPublic ) {
                 res.send([])
             } else {
                 res.send(rst)
@@ -121,9 +121,16 @@ app.get('/public/:id', (req, res) => {
 
 // get all notes for author
 app.get('/author', checkJwt, (req, res) => {
-    let author = req.user === undefined ? null : req.user.nickname
-    notesRepo.getByAuthor(author)
+    let nickname = req.user === undefined ? null : req.user.nickname
+    notesRepo.getByAuthor(nickname)
         .then( (rst) => {
+			rst = rst.map( (x) => {
+				delete x.content
+				delete x.showCreation
+				delete x.showUpdate
+				delete x.showAuthor
+				return(x)
+			} )
             res.send(rst)
         })
         .catch( (err) => {
@@ -135,8 +142,8 @@ app.get('/author', checkJwt, (req, res) => {
 
 // delete a specific note
 app.delete('/delete/:id', checkJwt, (req, res) => {
-    let author = req.user === undefined ? null : req.user.nickname
-    notesRepo.delete(req.params.id, author)
+    let nickname = req.user === undefined ? null : req.user.nickname
+    notesRepo.delete(req.params.shortId, nickname)
         .then( (rst) => {
             res.status(200).send(rst)
         })
