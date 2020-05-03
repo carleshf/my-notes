@@ -56,13 +56,13 @@ class Public extends Component {
         var author = ''
         var cDate = ''
         var uDate = ''
-        if(this.state.author !== '') {
+        if(this.state.author !== undefined) {
             author = <Row><Col>by: <em>{ this.state.author }</em></Col></Row>
         }
-        if(this.state.creationDate !== '') {
+        if(this.state.creationDate !== undefined) {
             cDate = <Row><Col>created on: <em>{ this.state.creationDate }</em></Col></Row>
         }
-        if(this.state.updateDate !== '') {
+        if(this.state.updateDate !== undefined) {
             uDate = <Row><Col>last updated on: <em>{ this.state.updateDate }</em></Col></Row>
         }
         return (
