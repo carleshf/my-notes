@@ -5,7 +5,7 @@ import axios from 'axios'
 import ReactMde from 'react-mde'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import {Container, Row, Col, InputGroup, FormControl, Button, Form, Modal} from 'react-bootstrap'
+import {Container, Row, Col, InputGroup, FormControl, Button, ButtonGroup, Form, Modal} from 'react-bootstrap'
 
 const converter = new Showdown.Converter({
     tables: true,
@@ -36,7 +36,8 @@ class Note extends Component {
             showAuthor: true,
             saved: false,
             tab: 'write',
-            showPublicModeal: false,
+            showPublicModal: false,
+            showDeleteModal: false,
             history: props.history
         }
     }
@@ -71,7 +72,11 @@ class Note extends Component {
     }
 
     setShowPublic = (flag) => { 
-        this.setState({ showPublicModeal: flag })
+        this.setState({ showPublicModal: flag })
+    }
+
+    setShowDelete = (flag) => {
+        this.setState({ showDeleteModal: flag })
     }
 
     togglePublic = () => {
@@ -129,25 +134,24 @@ class Note extends Component {
         var button_public = ''
         if(this.state.saved) {
             button_public = <Button size = "sm" variant="outline-secondary" onClick={ () => this.setShowPublic(true) }>Public</Button>
-            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" onClick={ this.delete }>Delete note</Button></Link>
+            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" onClick={ () => this.setShowDelete(true) }>Delete note</Button></Link>
         } else {
             button_public = <Button size = "sm" variant="outline-secondary" disabled>Public</Button>
             button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" disabled>Delete note</Button></Link>
-            /*check = <Form.Check className="float-right" type="switch" id="public-switch" label="Public" disabled
-                checked={this.state.public}
-                onChange={this.updatePublic}
-            />*/
         }
         return (
             <Container>
                 <Row>
                     <Col xs={6}></Col>
                     <Col xs={6}>
-                        <PublicModal show={ this.state.showPublicModeal } onHide={ () => this.setShowPublic(false) } 
+                        <PublicModal show={ this.state.showPublicModal } onHide={ () => this.setShowPublic(false) } 
                             ispublic={ this.state.isPublic } togglepublic={ this.togglePublic }
                             showcreation={ this.state.showCreation } togglecreation={ this.togglePublicCreation }
                             showupdate={ this.state.showUpdate } toggleupdate={ this.togglePublicUpdate }
                             showauthor={ this.state.showAuthor } toggleauthor={ this.togglePublicAuthor }
+                        />
+                        <DeleteModal show={ this.state.showDeleteModal } onHide={ () => this.setShowDelete(false) }
+                            deletenote={ this.delete }
                         />
                     </Col>
                 </Row>
@@ -172,6 +176,9 @@ class Note extends Component {
                     </Col>
                 </Row>
                 <Row>
+                    <Col xs={2}>
+                        <Link to="/notes"><Button size = "sm" variant="outline-secondary">Go to all notes</Button></Link>
+                    </Col>
                     <Col xs={2}>
                         { button_delete }
                     </Col>
@@ -199,15 +206,7 @@ class Note extends Component {
                             }}*/
                         />
                     </Col>
-                </Row>
-                <Row><Col>&nbsp;</Col></Row>
-                <Row>
-                    <Col></Col>
-                    <Col className="text-center">
-                        <Link to="/notes"><Button variant="outline-secondary">Go to all notes</Button></Link>
-                    </Col>
-                    <Col></Col>
-                </Row>
+                </Row>                
             </Container>
         )
     }
@@ -293,5 +292,32 @@ function PublicModal(props) {
         </Modal>
     )
 }
+
+
+function DeleteModal(props) {
+    return (
+        <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Body>
+                <p>Are you sure you want to delete this note?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <ButtonGroup aria-label="Basic example">
+                    <Button variant="outline-danger" onClick={ props.deletenote }>Yes</Button>
+                    <Button variant="outline-secondary" onClick={ props.onHide }>No</Button>
+                </ButtonGroup>
+            </Modal.Footer>
+        </Modal>
+    )
+}
+
+
+
+/*<Modal.Header closeButton>
+    <Modal.Title id="contained-modal-title-vcenter">
+        Public configuration
+    </Modal.Title>
+</Modal.Header>*/
+
+
 
 export default withRouter(Note)

@@ -1,6 +1,6 @@
 {
   "name": "my-notes",
-  "homepage": "http://notes.carleshf.com",
+  "homepage": "https://notes.carleshf.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,6 +10,9 @@
     "auth0-js": "^9.13.2",
     "axios": "^0.19.2",
     "dompurify": "^2.0.8",
+    "http-agent": "^0.1.2",
+    "https": "^1.0.0",
+    "https-agent": "^1.0.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^16.13.1",

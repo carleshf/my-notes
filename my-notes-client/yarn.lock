@@ -5140,6 +5140,13 @@ htmlparser2@^3.3.0:
     inherits "^2.0.1"
     readable-stream "^3.1.1"
 
+http-agent@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/http-agent/-/http-agent-0.1.2.tgz#aaacd633c87e5ab42ed4f90827a1a5f1e2bac4b8"
+  integrity sha1-qqzWM8h+WrQu1PkIJ6Gl8eK6xLg=
+  dependencies:
+    request "1.9.x"
+
 http-deceiver@^1.2.7:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/http-deceiver/-/http-deceiver-1.2.7.tgz#fa7168944ab9a519d337cb0bec7284dc3e723d87"
@@ -5210,10 +5217,22 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
+https-agent@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https-agent/-/https-agent-1.0.0.tgz#895c61adafee57f3893562656fb2ad483786043e"
+  integrity sha1-iVxhra/uV/OJNWJlb7KtSDeGBD4=
+  dependencies:
+    tunnel "^0.0.3"
+
 https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
+
+https@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https/-/https-1.0.0.tgz#3c37c7ae1a8eeb966904a2ad1e975a194b7ed3a4"
+  integrity sha1-PDfHrhqO65ZpBKKtHpdaGUt+06Q=
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
@@ -9115,6 +9134,11 @@ request-promise-native@^1.0.5:
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
+request@1.9.x:
+  version "1.9.9"
+  resolved "https://registry.yarnpkg.com/request/-/request-1.9.9.tgz#af231fe87e3725a5db46ff74833f3aa0ebfd9151"
+  integrity sha1-ryMf6H43JaXbRv90gz86oOv9kVE=
+
 request@^2.87.0, request@^2.88.0:
   version "2.88.2"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.2.tgz#d73c918731cb5a87da047e207234146f664d12b3"
@@ -10360,6 +10384,11 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
+
+tunnel@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.3.tgz#e8f988115ca7be9d076c7a1fae4788be708f0cf1"
+  integrity sha1-6PmIEVynvp0HbHofrkeIvnCPDPE=
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

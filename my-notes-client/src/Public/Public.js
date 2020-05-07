@@ -16,6 +16,7 @@ const converter = new Showdown.Converter({
 class Public extends Component {
     constructor(props) {
         super(props)
+        console.log('1')
         this.state = {
             shortId: '',
             author: '',
@@ -24,12 +25,15 @@ class Public extends Component {
             title: 'Invalid URL',
             content: 'The content you are looking for **is not available**'
         }
+        console.log('2')
     }
 
     componentDidMount = async () => {
-        const { match: { params } } = this.props;
-        console.log(params)
+        console.log('3')
+        const { match: { params } } = this.props
+        console.log('4')
         if(params.id === "-1" || params.id === '') {
+            console.log('5A')
             this.setState({
                 shortId: '',
                 author: '',
@@ -40,7 +44,7 @@ class Public extends Component {
             })
         } else {
             const note = (await axios.get(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/public/${params.id}`)).data
-            console.log(">", note)
+            console.log('5B')
             this.setState({
                 shortId: note.shortId,
                 author: note.author,
@@ -53,6 +57,7 @@ class Public extends Component {
     }
 
     render = () => {
+        console.log('6')
         var author = ''
         var cDate = ''
         var uDate = ''
@@ -65,6 +70,7 @@ class Public extends Component {
         if(this.state.updateDate !== undefined) {
             uDate = <Row><Col>last updated on: <em>{ this.state.updateDate }</em></Col></Row>
         }
+        console.log('7')
         return (
             <Container>
                 <Row>

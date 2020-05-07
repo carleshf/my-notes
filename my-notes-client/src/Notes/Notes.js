@@ -4,23 +4,40 @@ import auth0Client from '../Auth'
 import axios from 'axios'
 import {Container, Row, InputGroup, FormControl, Button, ListGroup, Col} from 'react-bootstrap'
 import Emoji from '../Emoji/Emoji'
+const https = require('https')
 
 class Notes extends Component {
     constructor(props) {
         super(props)
-
-        this.state = {
-            notes: null,
-        }
+        this.state = { notes: [] }
     }
 
     async componentDidMount() {
+        //console.log(`Bearer ${auth0Client.getIdToken()}`)
+        const agent = new https.Agent({  
+            rejectUnauthorized: false
+        })
         const notes = (await axios.get(
             `${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/author`, {
-                headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
-        }))
+                httpsAgent: agent,
+                headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}`  }
+            }
+        ))
         this.setState({ notes: notes.data })
     }
+
+    /*async componentDidMount() {
+        console.log(`Bearer ${auth0Client.getIdToken()}`)
+        console.log("NOTES")
+        const agent = new https.Agent({ rejectUnauthorized: false })
+        const notes = (await axios.get(
+            `${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/author`, {
+                httpsAgent: agent,
+                headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
+            }
+        ))
+        this.setState({ notes: notes.data })
+    }*/
 
     render = () => {
         var notes = ''
@@ -34,7 +51,7 @@ class Notes extends Component {
             notes = <Row><Col><ListGroup> { 
                 this.state.notes.map( (note, idx) => (
                     <ListGroup.Item action key={idx}>
-                        <Emoji symbol={ note.isPublic ? "🔓" : "🔒" } label={ note.isPublic ? "public" : "private" }/>
+                        <Emoji symbol={ note.isPublic ? "📢" : "🔒" } label={ note.isPublic ? "public" : "private" }/>
                         &nbsp;
                         <Link to={'/note/' + note.shortId }>{ note.date } | { note.title } </Link>
                     </ListGroup.Item>
