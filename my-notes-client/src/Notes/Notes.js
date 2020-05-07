@@ -3,7 +3,10 @@ import {Link} from 'react-router-dom'
 import auth0Client from '../Auth'
 import axios from 'axios'
 import {Container, Row, InputGroup, FormControl, Button, ListGroup, Col} from 'react-bootstrap'
-import Emoji from '../Emoji/Emoji'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLock, faLockOpen, faStickyNote, faSearch } from '@fortawesome/free-solid-svg-icons'
+
+
 const https = require('https')
 
 class Notes extends Component {
@@ -50,8 +53,8 @@ class Notes extends Component {
         if(this.state.notes !== null && this.state.notes.length !== 0) {
             notes = <Row><Col><ListGroup> { 
                 this.state.notes.map( (note, idx) => (
-                    <ListGroup.Item action key={idx}>
-                        <Emoji symbol={ note.isPublic ? "📢" : "🔒" } label={ note.isPublic ? "public" : "private" }/>
+                    <ListGroup.Item action key={ idx }>
+                        { note.isPublic ? <FontAwesomeIcon icon={ faLockOpen } /> :  <FontAwesomeIcon icon={ faLock } /> }
                         &nbsp;
                         <Link to={'/note/' + note.shortId }>{ note.date } | { note.title } </Link>
                     </ListGroup.Item>
@@ -73,12 +76,12 @@ class Notes extends Component {
                                 aria-describedby="basic-addon1"
                             />
                             <InputGroup.Append>
-                                <Button variant="outline-secondary">Search notes</Button>
+                                <Button variant="outline-secondary"><FontAwesomeIcon icon={ faSearch } /> Search notes</Button>
                             </InputGroup.Append>
                         </InputGroup>
                     </Col>
                     <Col sm={3}>
-                        <Link className="float-right" to="/note/-1"><Button variant="outline-secondary">New note</Button></Link>
+                        <Link className="float-right" to="/note/-1"><Button variant="outline-secondary"><FontAwesomeIcon icon={ faStickyNote } /> New note</Button></Link>
                     </Col>
                 </Row>
                 { notes }

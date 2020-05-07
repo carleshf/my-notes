@@ -6,6 +6,9 @@ import ReactMde from 'react-mde'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import {Container, Row, Col, InputGroup, FormControl, Button, ButtonGroup, Form, Modal} from 'react-bootstrap'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLayerGroup, faTrash, faCog, faSave } from '@fortawesome/free-solid-svg-icons'
+
 
 const converter = new Showdown.Converter({
     tables: true,
@@ -122,10 +125,13 @@ class Note extends Component {
     }
 
     delete = async () => {
-        const data = await axios.delete(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/delete/${this.state.shortId}`, {
+        await axios.delete(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}/delete/${this.state.shortId}`, {
             headers: { 'Authorization': `Bearer ${auth0Client.getIdToken()}` }
         })
-        console.log(data)
+        this.state.history.push('/notes')
+    }
+
+    back = () => {
         this.state.history.push('/notes')
     }
 
@@ -133,11 +139,11 @@ class Note extends Component {
         var button_delete = ''
         var button_public = ''
         if(this.state.saved) {
-            button_public = <Button size = "sm" variant="outline-secondary" onClick={ () => this.setShowPublic(true) }>Public</Button>
-            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" onClick={ () => this.setShowDelete(true) }>Delete note</Button></Link>
+            button_public = <Button size = "sm" variant="outline-secondary" onClick={ () => this.setShowPublic(true) }><FontAwesomeIcon icon={ faCog } /> Public</Button>
+            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" onClick={ () => this.setShowDelete(true) }><FontAwesomeIcon icon={ faTrash } /> Delete</Button></Link>
         } else {
-            button_public = <Button size = "sm" variant="outline-secondary" disabled>Public</Button>
-            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" disabled>Delete note</Button></Link>
+            button_public = <Button size = "sm" variant="outline-secondary" disabled><FontAwesomeIcon icon={ faCog } /> Public</Button>
+            button_delete = <Link to="#"><Button size = "sm" variant="outline-danger" disabled><FontAwesomeIcon icon={ faTrash } /> Delete</Button></Link>
         }
         return (
             <Container>
@@ -170,21 +176,21 @@ class Note extends Component {
                                 onChange={ (event) => this.updateTitle(event.target.value) }
                             />
                             <InputGroup.Append>
-                                <Button variant="outline-secondary" onClick={ this.submit }>Save</Button>
+                                <Button variant="outline-secondary" onClick={ this.submit }><FontAwesomeIcon icon={ faSave } /> Save</Button>
                             </InputGroup.Append>
                         </InputGroup>
                     </Col>
                 </Row>
                 <Row>
                     <Col xs={2}>
-                        <Link to="/notes"><Button size = "sm" variant="outline-secondary">Go to all notes</Button></Link>
-                    </Col>
-                    <Col xs={2}>
                         { button_delete }
                     </Col>
                     <Col></Col>
-                    <Col  xs={2} className="text-right">
-                        { button_public }
+                    <Col  xs={3} className="text-right">
+                        <ButtonGroup aria-label="Basic example">
+                            { button_public }
+                            <Button size = "sm" variant="outline-secondary" onClick={ this.back }><FontAwesomeIcon icon={ faLayerGroup } /> Back to notes</Button>
+                        </ButtonGroup>
                     </Col>
                 </Row>
                 <Row><Col>&nbsp;</Col></Row>
@@ -296,15 +302,13 @@ function PublicModal(props) {
 
 function DeleteModal(props) {
     return (
-        <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal {...props} size="sm" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Body>
                 <p>Are you sure you want to delete this note?</p>
             </Modal.Body>
             <Modal.Footer>
-                <ButtonGroup aria-label="Basic example">
-                    <Button variant="outline-danger" onClick={ props.deletenote }>Yes</Button>
-                    <Button variant="outline-secondary" onClick={ props.onHide }>No</Button>
-                </ButtonGroup>
+                <Button size="sm" variant="outline-danger" onClick={ props.deletenote }>Yes</Button>
+                <Button size="sm" variant="outline-secondary" onClick={ props.onHide }>No</Button>
             </Modal.Footer>
         </Modal>
     )
