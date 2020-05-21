@@ -1,13 +1,13 @@
-import React, {Component} from 'react'
-import {withRouter, Link} from 'react-router-dom'
+import React, { Component } from 'react'
+import { withRouter, Link } from 'react-router-dom'
 import auth0Client from '../Auth'
 import axios from 'axios'
 import ReactMde from 'react-mde'
 import * as Showdown from 'showdown'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import {Container, Row, Col, InputGroup, FormControl, Button, ButtonGroup, Form, Modal} from 'react-bootstrap'
+import { Container, Row, Col, InputGroup, FormControl, Button, ButtonGroup, Form, Modal, Spinner } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLayerGroup, faTrash, faCog, faSave } from '@fortawesome/free-solid-svg-icons'
+import { faLayerGroup, faTrash, faCog, faSave, faTag } from '@fortawesome/free-solid-svg-icons'
 
 
 const converter = new Showdown.Converter({
@@ -41,6 +41,7 @@ class Note extends Component {
             tab: 'write',
             showPublicModal: false,
             showDeleteModal: false,
+            procSaving: false,
             history: props.history
         }
     }
@@ -101,6 +102,7 @@ class Note extends Component {
     submit = async () => {
         let current_datetime = new Date()
         let formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds())
+        this.setState({ procSaving: true })
 
         const data = await axios.post(`${process.env.REACT_APP_NOTES_SERVER_URL_PORT}`, {
             shortId: this.state.shortId === 'no id' ? '' : this.state.shortId,
@@ -120,7 +122,8 @@ class Note extends Component {
 
         this.setState({ 
             shortId: data.data.shortId,
-            saved: true
+            saved: true,
+            procSaving: false
         })
     }
 
@@ -176,7 +179,7 @@ class Note extends Component {
                                 onChange={ (event) => this.updateTitle(event.target.value) }
                             />
                             <InputGroup.Append>
-                                <Button variant="outline-secondary" onClick={ this.submit }><FontAwesomeIcon icon={ faSave } /> Save</Button>
+        <Button variant="outline-secondary" onClick={ this.submit }>{ this.state.procSaving ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : <FontAwesomeIcon icon={ faSave } /> } Save</Button>
                             </InputGroup.Append>
                         </InputGroup>
                     </Col>
@@ -189,7 +192,8 @@ class Note extends Component {
                     <Col  xs={3} className="text-right">
                         <ButtonGroup aria-label="Basic example">
                             { button_public }
-                            <Button size = "sm" variant="outline-secondary" onClick={ this.back }><FontAwesomeIcon icon={ faLayerGroup } /> Back to notes</Button>
+                            <Button size="sm" variant="outline-secondary" disabled><FontAwesomeIcon icon={ faTag } /> Tags</Button>
+                            <Button size="sm" variant="outline-secondary" onClick={ this.back }><FontAwesomeIcon icon={ faLayerGroup } /> Back to notes</Button>
                         </ButtonGroup>
                     </Col>
                 </Row>
